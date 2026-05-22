@@ -1,58 +1,45 @@
 # Video Object Identification
 
-A service that analyzes a video and identifies the objects a person is interacting with.
+This service takes a video file and figures out what objects are in it, whether they're moving or sitting still, and whether a person interacts with them. You upload a video, get a task ID back, and poll for results while it processes in the background.
 
-## What it does
-1. Detects objects in each frame using YOLOv8
-2. Tracks each object across frames with a consistent ID
-3. Classifies each object as moving or stationary
-4. Detects when a person's hand interacts with an object
-5. Returns structured JSON output describing everything found
-6. Saves keyframe screenshots at key moments (bonus)
+## How to run it
 
-## Tech stack
-- FastAPI - REST API framework
-- OpenCV - video processing and frame extraction
-- YOLOv8 (Ultralytics) - object detection
-- MediaPipe - hand detection and tracking
-- SQLite - task and result persistence
-- pytest - testing
+Clone the repo and set up a virtual environment:
 
-## Setup instructions
+    git clone https://github.com/brianduc7/video-object-identification.git
+    cd video-object-identification
+    python -m venv venv
+    source venv/Scripts/activate
 
-1. Clone the repo
-git clone https://github.com/brianduc7/video-object-identification.git
-cd video-object-identification
+Install dependencies:
 
-2. Create and activate a virtual environment
-python -m venv venv
-source venv/Scripts/activate
+    pip install -r requirements.txt
+    pip install pytest httpx
 
-3. Install dependencies
-pip install -r requirements.txt
-pip install pytest httpx
+Start the server:
 
-4. Run the server
-python -m uvicorn main:app --reload
+    python -m uvicorn main:app
 
-5. Open the app
-Visit http://127.0.0.1:8000/static/index.html
-Visit http://127.0.0.1:8000/docs for Swagger UI
+Then open http://127.0.0.1:8000/docs to use the Swagger UI, or http://127.0.0.1:8000/static/index.html for the upload page.
 
-## API endpoints
-POST   /video              Upload a video file, returns task_id
-GET    /task/{task_id}     Check processing status
-GET    /result/{task_id}   Get the full JSON result
+## API
+
+POST /video — upload a video file, returns a task_id immediately
+GET /task/{task_id} — check if processing is pending, processing, done, or error
+GET /result/{task_id} — get the full JSON output once done
 
 ## Running tests
-python -m pytest tests/test_api.py -v
 
-## Assumptions and tradeoffs
-- Processing runs in a background thread not a proper job queue
-- YOLO runs on CPU by default, slower without a GPU
-- IoU-based tracking can lose object IDs through occlusion
-- Only the first detected hand is used for interaction detection
-- YOLO confidence threshold is 0.3, adjustable in services/detector.py
+    python -m pytest tests/test_api.py -v
+
+## Stack
+
+Python, FastAPI, OpenCV, YOLOv8 (Ultralytics), MediaPipe, SQLite
+
+## Tradeoffs
+
+Processing runs in a background thread rather than a proper job queue like Celery. YOLO runs on CPU so processing is slower without a GPU. The IoU-based tracker can lose object IDs through occlusion. MediaPipe hand detection is disabled by default due to compatibility issues with the installed version — interaction detection defaults to empty.
 
 ## Time spent
-Approximately 8 hours.
+
+Around 8 hours.
