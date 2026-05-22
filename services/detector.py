@@ -4,7 +4,7 @@ import numpy as np
 # Load the YOLOv8 model once when this file is imported
 # "yolov8n.pt" is the smallest and fastest version — good for development
 # It will automatically download the model weights the first time you run it
-model = YOLO("yolov8n.pt")
+model = YOLO("yolov8s.pt")
 
 
 def detect_objects(frames):

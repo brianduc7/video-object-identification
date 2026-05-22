@@ -98,8 +98,8 @@ def process_video(task_id, video_path):
         tracked_objects = classify_motion(tracked_objects)
 
         # Step 6 - detect person and hand interactions with objects
-        from services.interaction import detect_interactions
-        tracked_objects = detect_interactions(frames, tracked_objects)
+        # from services.interaction import detect_interactions
+        # tracked_objects = detect_interactions(frames, tracked_objects)
 
         # Step 7 - save keyframe screenshots
         from services.keyframe import extract_keyframes
@@ -126,6 +126,10 @@ def process_video(task_id, video_path):
             "videoMetadata": video_metadata,
             "objectsDetected": objects_output
         }
+
+        # Step 10 - save result and mark task as done
+        save_result(task_id, result)
+        update_task_status(task_id, "done")
 
     except Exception as e:
         print(f"Error processing video {task_id}: {e}")
