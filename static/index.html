@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Object Identification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #result {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Object Identification</h1>
+
+    <!-- File picker for uploading a video -->
+    <input type="file" id="videoFile" accept="video/*" />
+    <br>
+    <button id="uploadBtn" onclick="uploadVideo()">Upload Video</button>
+
+    <!-- Shows current status of the task -->
+    <div id="status"></div>
+
+    <!-- Shows the final JSON result -->
+    <div id="result"></div>
+
+    <script>
+        // Stores the task ID returned after upload
+        let taskId = null;
+
+        // Stores the polling interval so we can stop it when done
+        let pollInterval = null;
+
+        async function uploadVideo() {
+            const fileInput = document.getElementById("videoFile");
+            const file = fileInput.files[0];
+
+            // Make sure user picked a file
+            if (!file) {
+                alert("Please select a video file first");
+                return;
+            }
+
+            // Disable the button so user can't upload twice
+            document.getElementById("uploadBtn").disabled = true;
+            document.getElementById("status").innerText = "Uploading...";
+
+            // Build a FormData object to send the file
+            // This is how you send a file over HTTP
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Send the video to the POST /video endpoint
+            const response = await fetch("/video", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            taskId = data.task_id;
+
+            document.getElementById("status").innerText = "Processing... Task ID: " + taskId;
+
+            // Start polling every 3 seconds to check if processing is done
+            pollInterval = setInterval(checkStatus, 3000);
+        }
+
+        async function checkStatus() {
+            // Call GET /task/{task_id} to check current status
+            const response = await fetch("/task/" + taskId);
+            const data = await response.json();
+
+            document.getElementById("status").innerText = "Status: " + data.status + " | Task ID: " + taskId;
+
+            // If done stop polling and fetch the result
+            if (data.status === "done") {
+                clearInterval(pollInterval);
+                fetchResult();
+            }
+
+            // If error stop polling and show message
+            if (data.status === "error") {
+                clearInterval(pollInterval);
+                document.getElementById("status").innerText = "Error processing video";
+            }
+        }
+
+        async function fetchResult() {
+            // Call GET /result/{task_id} to get the final JSON
+            const response = await fetch("/result/" + taskId);
+            const data = await response.json();
+
+            // Display the result formatted nicely
+            document.getElementById("result").innerText = JSON.stringify(data.result, null, 2);
+        }
+    </script>
+</body>
+</html>
