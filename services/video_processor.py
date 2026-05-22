@@ -111,9 +111,21 @@ def process_video(task_id, video_path):
             "objectsDetected": list(tracked_objects.values())
         }
 
-        # Step 9 - save result and mark task as done
-        save_result(task_id, result)
-        update_task_status(task_id, "done")
+        # Step 9 - build the final output
+        # Remove frame_positions since it's internal data, not part of the spec
+        objects_output = []
+        for obj in tracked_objects.values():
+            objects_output.append({
+                "object_id": obj["object_id"],
+                "class": obj["class"],
+                "motion_history": obj["motion_history"],
+                "interactions": obj["interactions"]
+            })
+
+        result = {
+            "videoMetadata": video_metadata,
+            "objectsDetected": objects_output
+        }
 
     except Exception as e:
         print(f"Error processing video {task_id}: {e}")
