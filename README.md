@@ -38,7 +38,7 @@ Python, FastAPI, OpenCV, YOLOv8 (Ultralytics), MediaPipe, SQLite
 
 ## Tradeoffs
 
-Processing runs in a background thread rather than a proper job queue like Celery. YOLO runs on CPU so processing is slower without a GPU. The IoU-based tracker can lose object IDs through occlusion. MediaPipe hand detection is disabled by default due to compatibility issues with the installed version — interaction detection defaults to empty.
+Processing runs in a background thread rather than a proper job queue like Celery. YOLO runs on CPU so processing is slower without a GPU. The IoU-based tracker can lose object IDs through occlusion. MediaPipe hand detection is disabled by default due to compatibility issues with the installed version interaction detection defaults to empty.
 
 ## Time spent
 
