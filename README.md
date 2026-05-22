@@ -53,9 +53,9 @@ video-object-identification/
 
 ## API
 
-POST /video — upload a video file, returns a task_id immediately
-GET /task/{task_id} — check if processing is pending, processing, done, or error
-GET /result/{task_id} — get the full JSON output once done
+POST /video: upload a video file, returns a task_id immediately
+GET /task/{task_id}: check if processing is pending, processing, done, or error
+GET /result/{task_id}: get the full JSON output once done
 
 ## Running tests
 

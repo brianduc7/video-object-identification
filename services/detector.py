@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import numpy as np
 
 # Load the YOLOv8 model once when this file is imported
-# "yolov8n.pt" is the smallest and fastest version — good for development
+# "yolov8n.pt" is the smallest and fastest version; good for development
 # It will automatically download the model weights the first time you run it
 model = YOLO("yolov8s.pt")
 
@@ -25,7 +25,7 @@ def detect_objects(frames):
         ]
     }
 
-    bbox is the bounding box — the four coordinates of the rectangle
+    bbox is the bounding box: the four coordinates of the rectangle
     drawn around the detected object:
     x1, y1 = top left corner
     x2, y2 = bottom right corner
@@ -51,7 +51,7 @@ def detect_objects(frames):
             class_index = int(box.cls.cpu().numpy()[0])
             class_name = model.names[class_index]
 
-            # box.conf gives the confidence score — how sure YOLO is
+            # box.conf gives the confidence score: how sure YOLO is
             # e.g. 0.91 means 91% confident this is a bottle
             confidence = float(box.conf.cpu().numpy()[0])
 
