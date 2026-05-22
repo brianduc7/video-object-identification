@@ -5,6 +5,8 @@ from db.database import init_db
 
 app = FastAPI(title="Video Object Identification")
 
+# Create the database tables when the app starts
+# If they already exist, init_db() skips them
 init_db()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
